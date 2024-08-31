@@ -1,9 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import React, {useMemo, useRef} from 'react';
+import {Text, StyleSheet, Dimensions} from 'react-native';
+import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 
 const BS_HANDLE_SIZE = 24;
-const BS_PADDING = 20
+const BS_PADDING = 20;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 type Props = {
   numberOfLines: number;
@@ -12,10 +13,19 @@ type Props = {
 function CustomBottomSheet({ numberOfLines }: Props) {
   const bottomSheetModalRef = useRef<BottomSheet>(null);
 
+  const lines = useMemo(() => {
+    return (new Array(numberOfLines)).fill(null)
+  }, [numberOfLines])
+  
   const snapPoints = useMemo(() => {
+    const maxShouldBe = BS_HANDLE_SIZE + (4 * BS_PADDING) + (numberOfLines * 20); // space for all lines
+    const maxCanBe = SCREEN_HEIGHT; // 80% of the screen
+  
+    const expandedPoint = maxShouldBe > maxCanBe ? maxCanBe : maxShouldBe;
+
     return [
       BS_HANDLE_SIZE + BS_PADDING + (3 * 20),
-      BS_HANDLE_SIZE + (2 * BS_PADDING) + (numberOfLines * 20),
+      expandedPoint,
     ];
   }, [numberOfLines]);
 
@@ -27,14 +37,16 @@ function CustomBottomSheet({ numberOfLines }: Props) {
       backgroundStyle={styles.bottomsheet}
       handleIndicatorStyle={styles.indicator}
     >
-      <BottomSheetView style={styles.contentContainer}>
-        <View>
-          <Text
-            style={styles.text}
-          >{generateDummyText(numberOfLines)}
+      <BottomSheetFlatList
+        contentContainerStyle={styles.contentContainer}
+        data={lines}
+        renderItem={() => (
+          <Text style={styles.text}>
+            Lorem lpsum is simply text to the service in the world
           </Text>
-        </View>
-      </BottomSheetView>
+        )}
+        keyExtractor={(_, i) => `line-${i}`}
+      />
     </BottomSheet>
   );
 }
@@ -50,18 +62,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 20,
-    backgroundColor: "#00C7BE",
+    paddingVertical: 15,
   },
   text: {
     fontSize: 16,
+    color: "#fff",
   },
 });
-
-function generateDummyText(numberOfLines: number): string {
-  return new Array(numberOfLines)
-    .fill("Lorem lpsum is simply text to the service in the world")
-    .join('\n');
-}
 
 export default CustomBottomSheet;
