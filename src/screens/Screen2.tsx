@@ -3,6 +3,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {StyleSheet, Text, View} from 'react-native';
 import {AppStackParamList} from '../navigation/AppNavigator';
 import {AnimatedHeader} from '../components/AnimatedHeader';
+import BottomSheet from '../components/BottomSheet';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Screen2'>;
 
@@ -11,7 +12,10 @@ function Screen2({navigation, route}: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <AnimatedHeader height={20} />
-      <Text>Screen2 {numberOfLines}</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.heading}>Screen 2</Text>
+      </View>
+      <BottomSheet numberOfLines={numberOfLines} />
     </View>
   );
 }
